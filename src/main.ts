@@ -44,6 +44,8 @@ export const transformingFunction = (items: Item[], { customInputData, diff }: T
         }
     }
 
+    console.log(`There are ${itemsWithoutFieldToMap} items without ${fieldToMapBy} field, these were skipped`);
+
     // Now we construct the final outputs and create the diff
     const output = [];
 

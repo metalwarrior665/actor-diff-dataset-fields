@@ -1,74 +1,73 @@
-## TypeScript Crawlee & CheerioCrawler template
+Compare items of two datasets to see changes in their fields. You match the items by a key field and then compare the any number of textual fields.
 
-A template example built with [Crawlee](https://crawlee.dev/) to scrape data from a website using [Cheerio](https://cheerio.js.org/) wrapped into [CheerioCrawler](https://crawlee.dev/api/cheerio-crawler/class/CheerioCrawler).
+## Diff
+You can choose one or more fields to diff between two items that are matched by a key field. The diff is computed using the [fast-diff](https://www.npmjs.com/package/fast-diff) package where the output is a list of text parts that are marked with a number depending if they are inserted (1), deleted (-1) or unchanged (0).
 
-## Included features
+## Output
 
-- **[Apify SDK](https://docs.apify.com/sdk/js)** - toolkit for building [Actors](https://apify.com/actors)
-- **[Crawlee](https://crawlee.dev/)** - web scraping and browser automation library
-- **[Input schema](https://docs.apify.com/platform/actors/development/input-schema)** - define and easily validate a schema for your Actor's input
-- **[Dataset](https://docs.apify.com/sdk/python/docs/concepts/storages#working-with-datasets)** - store structured data where each object stored has the same attributes
-- **[Cheerio](https://cheerio.js.org/)** - a fast, flexible & elegant library for parsing and manipulating HTML and XML
+The output is a JSON object with the following properties:
+- `type`: Representing how the items were compared. Can be `new`, `removed`, `unchanged` or `updated`.
+- `oldItem`: The item from the old dataset
+- `newItem`: The item from the new dataset
+- `diff`: The diff between the two items. Only present if the type is `updated`.
 
-## How it works
-
-This code is a TypeScript script that uses [Crawlee CheerioCralwer](https://crawlee.dev/api/cheerio-crawler/class/CheerioCrawler) framework to crawl a website and extract the data from the crawled URLs with Cheerio. It then stores the website titles in a dataset.
-
-- The crawler starts with URLs provided from the input `startUrls` field defined by the input schema. Number of scraped pages is limited by `maxPagesPerCrawl` field from input schema.
-- The crawler uses `requestHandler` for each URL to extract the data from the page with the Cheerio library and to save the title and URL of each page to the dataset. It also logs out each result that is being saved.
-
-## Resources
-
-- [Video tutorial](https://www.youtube.com/watch?v=yTRHomGg9uQ) on building a scraper using CheerioCrawler
-- [Written tutorial](https://docs.apify.com/academy/web-scraping-for-beginners/challenge) on building a scraper using CheerioCrawler
-- [Web scraping with Cheerio in 2023](https://blog.apify.com/web-scraping-with-cheerio/)
-- How to [scrape a dynamic page](https://blog.apify.com/what-is-a-dynamic-page/) using Cheerio
-- [TypeScript vs. JavaScript: which to use for web scraping?](https://blog.apify.com/typescript-vs-javascript-crawler/)
-- [Integration with Zapier](https://apify.com/integrations), Make, Google Drive and others
-- [Video guide on getting scraped data using Apify API](https://www.youtube.com/watch?v=ViYYDHSBAKM)
-- A short guide on how to build web scrapers using code templates:
-
-[web scraper template](https://www.youtube.com/watch?v=u-i-Korzf8w)
-
-
-## Getting started
-
-For complete information [see this article](https://docs.apify.com/platform/actors/development#build-actor-locally). To run the actor use the following command:
-
-```bash
-apify run
+### Example input
+```json
+{
+    "oldDatasetId": "0Azg4BxggC3RmcPpY",
+    "newDatasetId": "i4mfnrQEP8QmQAbHu",
+    "fieldToMapBy": "url",
+    "fieldsToDiff": ["text", "markdown"],
+    "outputType": "all",
+}
 ```
 
-## Deploy to Apify
+### Example output
+This is one item that was matched in both datasets, the real output will have all items from both datasets.
 
-### Connect Git repository to Apify
-
-If you've created a Git repository for the project, you can easily connect to Apify:
-
-1. Go to [Actor creation page](https://console.apify.com/actors/new)
-2. Click on **Link Git Repository** button
-
-### Push project on your local machine to Apify
-
-You can also deploy the project on your local machine to Apify without the need for the Git repository.
-
-1. Log in to Apify. You will need to provide your [Apify API Token](https://console.apify.com/account/integrations) to complete this action.
-
-    ```bash
-    apify login
-    ```
-
-2. Deploy your Actor. This command will deploy and build the Actor on the Apify Platform. You can find your newly created Actor under [Actors -> My Actors](https://console.apify.com/actors?tab=my).
-
-    ```bash
-    apify push
-    ```
-
-## Documentation reference
-
-To learn more about Apify and Actors, take a look at the following resources:
-
-- [Apify SDK for JavaScript documentation](https://docs.apify.com/sdk/js)
-- [Apify SDK for Python documentation](https://docs.apify.com/sdk/python)
-- [Apify Platform documentation](https://docs.apify.com/platform)
-- [Join our developer community on Discord](https://discord.com/invite/jyEM2PRvMU)
+```json
+{
+    "type": "updated",
+    "oldItem": {
+        "url": "https://www.peacocktv.com/start",
+        "text": "PeacockAdobe AudienceManagerBack ButtonSearch IconFilter Icon\nEnter your email to get started",
+		"markdown": "# PeacockAdobe AudienceManagerBack ButtonSearch IconFilter Icon\n\n## \n\nEnter your email to get started",
+    },
+    "newItem": {
+        "url": "https://www.peacocktv.com/start",
+        "text": "PeacockBack ButtonSearch IconFilter Icon\nEnter your email to get started",
+		"markdown": "# PeacockBack ButtonSearch IconFilter Icon\n\n## \n\nEnter your email to get started",
+    }
+    ,
+    "diff":{
+        "text": [
+            [
+                0,
+                "Peacock"
+            ],
+            [
+                -1,
+                "Adobe AudienceManager"
+            ],
+            [
+                0,
+                "Back ButtonSearch IconFilter Icon\nEnter your email to get started"
+            ]
+        ],
+        "markdown": [
+            [
+                0,
+                "# Peacock"
+            ],
+            [
+                -1,
+                "Adobe AudienceManager"
+            ],
+            [
+                0,
+                "Back ButtonSearch IconFilter Icon\n\n## \n\nEnter your email to get started"
+            ]
+        ]
+    }
+}
+```

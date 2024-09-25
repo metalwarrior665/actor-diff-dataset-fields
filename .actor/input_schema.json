@@ -3,22 +3,42 @@
     "type": "object",
     "schemaVersion": 1,
     "properties": {
-        "startUrls": {
-            "title": "Start URLs",
-            "type": "array",
-            "description": "URLs to start with.",
-            "editor": "requestListSources",
-            "prefill": [
-                {
-                    "url": "https://crawlee.dev"
-                }
-            ]
+        "oldDatasetId": {
+            "title": "Old Dataset ID",
+            "type": "string",
+            "description": "ID of the old dataset to compare.",
+            "editor": "textfield"
         },
-        "maxRequestsPerCrawl": {
-            "title": "Max Requests per Crawl",
-            "type": "integer",
-            "description": "Maximum number of requests that can be made by this crawler.",
-            "default": 100
+        "newDatasetId": {
+            "title": "New Dataset ID",
+            "type": "string",
+            "description": "ID of the new dataset to compare.",
+            "editor": "textfield"
+        },
+        "fieldToMapBy": {
+            "title": "Field to Map Items By",
+            "type": "string",
+            "description": "Field used to find which items should be matched for comparison. Usually some identifier like `url` or `id`.",
+            "editor": "textfield",
+            "default": "url"
+        },
+        "fieldsToDiff": {
+            "title": "Fields to Diff",
+            "type": "array",
+            "description": "Fields that will be compared between matched items. Usually fields like `text`, `description`, `markdown`.",
+            "editor": "stringList"
+        },
+        "outputType": {
+            "title": "What to output",
+            "type": "string",
+            "description": "Which items should be pushed to the default dataset",
+            "editor": "select",
+            "enum": [
+                "all",
+                "updated + new",
+                "updated + new + removed"
+            ],
+            "default": "all"
         }
     }
 }
