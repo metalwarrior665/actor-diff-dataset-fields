@@ -28,17 +28,16 @@
             "description": "Fields that will be compared between matched items. Usually fields like `text`, `description`, `markdown`.",
             "editor": "stringList"
         },
-        "outputType": {
+        "outputTypes": {
             "title": "What to output",
-            "type": "string",
+            "type": "array",
             "description": "Which items should be pushed to the default dataset",
             "editor": "select",
-            "enum": [
-                "all",
-                "updated + new",
-                "updated + new + removed"
-            ],
-            "default": "all"
+            "items": {
+                "type": "string",
+                "enum": ["new", "removed", "updated", "unchanged"]
+            },
+            "default": ["new", "removed", "updated", "unchanged"]
         }
     }
 }

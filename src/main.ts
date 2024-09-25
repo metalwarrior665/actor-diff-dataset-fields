@@ -8,7 +8,7 @@ export interface Input {
 
     fieldToMapBy: string;
     fieldsToDiff: string[];
-    outputType: 'all' | 'updated + new' | 'updated + new + removed';
+    outputTypes: ResultType[];
     doNoMetamorphTest: boolean;
 }
 
@@ -17,7 +17,7 @@ export const transformingFunction = (items: Item[], { customInputData, diff }: T
         fieldToMapBy,
         fieldsToDiff,
         // TODO: the outputType logic is not very clean, it should be refactored
-        outputType,
+        outputTypes,
         oldDatasetId,
         newDatasetId,
     } = customInputData;
@@ -66,7 +66,7 @@ export const transformingFunction = (items: Item[], { customInputData, diff }: T
 
         if (!newItem) {
             result.type = 'removed';
-            if (outputType === 'updated + new + removed' || outputType === 'all') {
+            if (outputTypes.includes('removed')) {
                 output.push(result);
             }
             continue;
@@ -89,10 +89,12 @@ export const transformingFunction = (items: Item[], { customInputData, diff }: T
         if (Object.keys(diffOutput).length > 0) {
             result.type = 'updated';
             result.diff = diffOutput;
-            output.push(result);
+            if (outputTypes.includes('updated')) {
+                output.push(result);
+            }
         } else {
             result.type = 'unchanged';
-            if (outputType === 'all') {
+            if (outputTypes.includes('unchanged')) {
                 output.push(result);
             }
         }
@@ -109,8 +111,9 @@ export const transformingFunction = (items: Item[], { customInputData, diff }: T
             newItem,
         };
 
-        // Every output type qualifies
-        output.push(result);
+        if (outputTypes.includes('new')) {
+            output.push(result);
+        }
     }
 
     return output;
@@ -123,7 +126,7 @@ await Actor.init();
 const {
     fieldToMapBy,
     fieldsToDiff = ['text'],
-    outputType = 'all',
+    outputTypes = ['new', 'updated', 'removed', 'unchanged'],
 
     // If run by webhook, pick triggerring run and the next older run
     oldDatasetId,
@@ -133,14 +136,14 @@ const {
 
 if (doNoMetamorphTest) {
     log.info('Running without metamorph (test mode)');
-    await noMetamorphTest({ fieldToMapBy, fieldsToDiff, outputType, oldDatasetId, newDatasetId, doNoMetamorphTest });
+    await noMetamorphTest({ fieldToMapBy, fieldsToDiff, outputTypes, oldDatasetId, newDatasetId, doNoMetamorphTest });
     await Actor.exit();
 }
 
 const customInputDataForDedup = {
     fieldToMapBy,
     fieldsToDiff,
-    outputType,
+    outputTypes,
     oldDatasetId,
     newDatasetId,
 };
@@ -152,13 +155,15 @@ interface TransformFunctionOptions {
     diff: (oldStr: string, newStr: string) => DiffLibOutout;
 }
 
+type ResultType = 'new' | 'updated' | 'unchanged' | 'removed';
+
 // Types can be
 // - new - fieldToMapBy is only in the new dataset
 // - updated - fieldToMapBy is in both and any of fieldsToDiff is different
 // - unchanged - fieldToMapBy is in both anf fieldsToDiff are all the same
 // - removed - fieldToMapBy is only in old dataset
 interface Result {
-    type: 'new' | 'updated' | 'unchanged' | 'removed';
+    type: ResultType;
     oldItem?: Item;
     newItem?: Item;
     diff?: Record<string, DiffLibOutout>;

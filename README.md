@@ -18,7 +18,7 @@ The output is a JSON object with the following properties:
     "newDatasetId": "i4mfnrQEP8QmQAbHu",
     "fieldToMapBy": "url",
     "fieldsToDiff": ["text", "markdown"],
-    "outputType": "all",
+    "outputTypes": ["new", "removed", "updated", "unchanged"],
 }
 ```
 
