@@ -37,8 +37,10 @@ export const transformingFunction = (items: Item[], { customInputData, diff }: T
             continue;
         }
         if (item.__datasetId__ === oldDatasetId) {
+            delete item.__datasetId__;
             oldDatasetItemsMap[key] = item;
         } else if (item.__datasetId__ === newDatasetId) {
+            delete item.__datasetId__;
             newDatasetItemsMap[key] = item;
         } else {
             // This would mean a bug in the dedup Actor so it should not happen
