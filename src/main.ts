@@ -10,6 +10,7 @@ export interface Input {
     fieldsToDiff: string[];
     outputTypes: ResultType[];
     outputDatasetId?: string;
+    onlyLoadStoreDiffedFields?: boolean;
     doNoMetamorphTest: boolean;
 }
 
@@ -132,13 +133,14 @@ const {
     // If run by webhook, pick triggerring run and the next older run
     oldDatasetId,
     newDatasetId,
+    onlyLoadStoreDiffedFields = false,
     doNoMetamorphTest = false,
     outputDatasetId,
 } = await Actor.getInput<Input>() ?? {} as Input;
 
 if (doNoMetamorphTest) {
     log.info('Running without metamorph (test mode)');
-    await noMetamorphTest({ fieldToMapBy, fieldsToDiff, outputTypes, oldDatasetId, newDatasetId, doNoMetamorphTest });
+    await noMetamorphTest({ fieldToMapBy, fieldsToDiff, outputTypes, oldDatasetId, newDatasetId, doNoMetamorphTest, onlyLoadStoreDiffedFields });
     await Actor.exit();
 }
 
@@ -177,6 +179,8 @@ const dedupActorInput = {
     postDedupTransformFunction: transformingFunction,
     appendDatasetIds: true,
     outputDatasetId,
+    // This can make the Actor significantly faster and load/store less data
+    fieldsToLoad: onlyLoadStoreDiffedFields ? [...fieldsToDiff, fieldToMapBy] : undefined,
 };
 
 await Actor.metamorph('lukaskrivka/dedup-datasets', dedupActorInput);

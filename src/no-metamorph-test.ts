@@ -8,8 +8,14 @@ import type { Input } from './main.js';
 export const noMetamorphTest = async (input: Input) => {
     const items = [];
 
-    const oldItems = (await Actor.apifyClient.dataset(input.oldDatasetId).listItems()).items;
-    const newItems = (await Actor.apifyClient.dataset(input.newDatasetId).listItems()).items;
+    const listItemsOptions: { fields?: string[] } = {};
+
+    if (input.onlyLoadStoreDiffedFields) {
+        listItemsOptions.fields = [...input.fieldsToDiff, input.fieldToMapBy];
+    }
+
+    const oldItems = (await Actor.apifyClient.dataset(input.oldDatasetId).listItems(listItemsOptions)).items;
+    const newItems = (await Actor.apifyClient.dataset(input.newDatasetId).listItems(listItemsOptions)).items;
 
     log.info(`Old dataset has ${oldItems.length} items and new dataset has ${newItems.length} items`);
 

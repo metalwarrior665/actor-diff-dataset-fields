@@ -45,6 +45,13 @@
             "description": "Enables storing the diff items into a separate dataset. Useful for tracking historical changes or integration workflows.",
             "editor": "textfield",
             "sectionCaption": "Advanced config"
+        },
+        "onlyLoadStoreDiffedFields": {
+            "title": "Only Load and Store Diffed and Mapping Fields (cost saving)",
+            "type": "boolean",
+            "description": "If enabled, only the fields specified in `fieldsToDiff` and `fieldToMapBy` will be loaded and stored in the output diff dataset. This helps to reduce storage costs and make the run faster.",
+            "editor": "checkbox",
+            "default": false
         }
     }
 }
