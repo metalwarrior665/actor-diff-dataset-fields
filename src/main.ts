@@ -9,6 +9,7 @@ export interface Input {
     fieldToMapBy: string;
     fieldsToDiff: string[];
     outputTypes: ResultType[];
+    outputDatasetId?: string;
     doNoMetamorphTest: boolean;
 }
 
@@ -132,6 +133,7 @@ const {
     oldDatasetId,
     newDatasetId,
     doNoMetamorphTest = false,
+    outputDatasetId,
 } = await Actor.getInput<Input>() ?? {} as Input;
 
 if (doNoMetamorphTest) {
@@ -174,6 +176,7 @@ const dedupActorInput = {
     customInputData: customInputDataForDedup,
     postDedupTransformFunction: transformingFunction,
     appendDatasetIds: true,
+    outputDatasetId,
 };
 
 await Actor.metamorph('lukaskrivka/dedup-datasets', dedupActorInput);

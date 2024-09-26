@@ -38,6 +38,13 @@
                 "enum": ["new", "removed", "updated", "unchanged"]
             },
             "default": ["new", "removed", "updated", "unchanged"]
+        },
+        "outputDatasetId": {
+            "title": "Output Dataset ID or name (optional)",
+            "type": "string",
+            "description": "Enables storing the diff items into a separate dataset. Useful for tracking historical changes or integration workflows.",
+            "editor": "textfield",
+            "sectionCaption": "Advanced config"
         }
     }
 }
